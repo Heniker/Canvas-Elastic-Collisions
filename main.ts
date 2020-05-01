@@ -1,7 +1,7 @@
 // #region globals
 const canvas = document.querySelector('canvas')
 const ctx = canvas.getContext('2d')
-const backgroundColor = 'rgba(117, 104, 175)'
+const backgroundColor = 'rgb(117, 104, 175)'
 // #endregion
 
 interface BaseObjectContructorI {
@@ -105,12 +105,12 @@ abstract class BaseObject implements DrawableI {
 
 class Circle extends BaseObject {
   static resolveCollision(circle1: Circle, circle2: Circle, distance?: number) {
-    const dR = circle1.radius + circle2.radius
+    const sumR = circle1.radius + circle2.radius
     const dP = circle1.position.sub(circle2.position)
     const dV = circle1.velocity.sub(circle2.velocity)
     const a = dV.dot(dV)
     const b = dP.dot(dV) * 2
-    const c = dP.dot(dP) - dR * dR
+    const c = dP.dot(dP) - sumR * sumR
     const t = (-b - Math.sqrt(b * b - 4 * a * c)) / (2 * a)
 
     /* Back them up to the touching point ... */
@@ -177,11 +177,11 @@ class Circle extends BaseObject {
 
     // helpers
     {
-      const targetVec = this.position
-        .clone()
-        .add(this.velocity.clone().multiplyScalar(50))
-      this.ctx.moveTo(this.position.x, this.position.y)
-      this.ctx.lineTo(targetVec.x, targetVec.y)
+      const targetVec = this.position.clone().add(this.velocity.clone())
+      const a = this.velocity.normalize().multiplyScalar(this.radius)
+      const b = targetVec.add(a)
+      this.ctx.moveTo(this.position.x + a.x, this.position.y + a.y)
+      this.ctx.lineTo(b.x, b.y)
       // this.ctx.strokeStyle = 'green'
       // this.ctx.stroke()
     }
@@ -206,32 +206,23 @@ class Scene {
     ctx.fillStyle = backgroundColor
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-    this.items.forEach((it) => {
-      const circles: Circle[][] = []
+    const circles: Circle[][] = []
 
-      it.position = it.position.add(it.velocity)
-      it.maybeBounceOfWall()
-
-      this.items.forEach((that) => {
-        if (it === that) {
-          return
-        }
+    for (let i = 0; i < this.items.length - 1; i++) {
+      for (let j = 1; j < this.items.length; j++) {
+        const it = this.items[i]
+        const that = this.items[j]
 
         if (it.detectCollision(that)) {
-          console.log('collision')
-
-          circles.push([it, that])
+          Circle.resolveCollision(it, that)
+          Circle.bounce(it, that)
         }
-      })
+      }
+    }
 
-      circles.forEach((arr) => {
-        const it = arr[0]
-        const that = arr[1]
-
-        Circle.resolveCollision(it, that)
-        Circle.bounce(it, that)
-      })
-
+    this.items.forEach((it) => {
+      it.position = it.position.add(it.velocity)
+      it.maybeBounceOfWall()
       it.draw()
     })
 
@@ -258,7 +249,7 @@ const scene = new Scene([
   new Circle({
     color: 'gray',
     velocity: new Vector(-2.5, 0),
-    position: new Vector(250, 150),
+    position: new Vector(150, 150),
     // mass: 1,
     radius: 35,
   }),
@@ -266,7 +257,7 @@ const scene = new Scene([
   new Circle({
     color: 'white',
     velocity: new Vector(2, 0),
-    position: new Vector(100, 150),
+    position: new Vector(200, 150),
     // mass: 2,
     radius: 55,
   }),
@@ -274,32 +265,32 @@ const scene = new Scene([
   new Circle({
     color: 'red',
     velocity: new Vector(-6, 0),
-    position: new Vector(450, 250),
+    position: new Vector(350, 150),
     radius: 35,
   }),
   new Circle({
     color: 'green',
-    velocity: new Vector(rand(-5, 5), rand(-5, 5)),
-    position: new Vector(30, 100),
-    radius: rand(5, 20),
+    velocity: new Vector(~~rand(-5, 15), ~~rand(-5, 15)),
+    position: new Vector(80, 300),
+    radius: ~~rand(10, 25),
   }),
   new Circle({
     color: 'green',
-    velocity: new Vector(rand(-5, 5), rand(-5, 5)),
+    velocity: new Vector(~~rand(-5, 15), ~~rand(-5, 15)),
     position: new Vector(150, 100),
-    radius: rand(5, 20),
+    radius: ~~rand(10, 25),
   }),
   new Circle({
     color: 'green',
-    velocity: new Vector(rand(-5, 5), rand(-5, 5)),
-    position: new Vector(150, 100),
-    radius: rand(5, 20),
+    velocity: new Vector(~~rand(-5, 15), ~~rand(-5, 15)),
+    position: new Vector(200, 200),
+    radius: ~~rand(10, 25),
   }),
   new Circle({
     color: 'green',
-    velocity: new Vector(rand(-5, 5), rand(-5, 5)),
-    position: new Vector(200, 100),
-    radius: rand(5, 20),
+    velocity: new Vector(~~rand(-5, 15), ~~rand(-15, 15)),
+    position: new Vector(300, 200),
+    radius: ~~rand(10, 25),
   }),
   // new Circle({
   //   color: 'green',

@@ -4,7 +4,7 @@ https://heniker.github.io/Canvas-Elastic-Collisions/
 ### About
 So... I started this 'project' to learn more about canvas in JavaScript. Little do I know that even simple physics simulation can be tricky.
 
-This took more time than I'd like to admit.
+*This took more time than I'd like to admit.*
 
 In case you're implementing elastic collisions - there are 2 main things to keep in mind:
 1. After collision velocity: <br>
@@ -28,3 +28,6 @@ In case you're implementing elastic collisions - there are 2 main things to keep
         // balls are moving away from each other - do nothing
       }
       ```
+
+Also, if circles are moving really fast - they can pass through each other on a single frame without colliding.
+AFAIK there isn't easy fix to this problem. You have to check circle position several times on a single render frame.

@@ -1,126 +1,107 @@
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
+"use strict";
 // #region globals
-var canvas = document.querySelector('canvas');
-var ctx = canvas.getContext('2d');
-var backgroundColor = 'rgba(117, 104, 175)';
+const canvas = document.querySelector('canvas');
+const ctx = canvas.getContext('2d');
+const backgroundColor = 'rgb(117, 104, 175)';
 // almost enteriely copied from Three.js implementation
 // except every function instead returns a new Vector
-var Vector = /** @class */ (function () {
-    function Vector(x, y) {
-        if (x === void 0) { x = 0; }
-        if (y === void 0) { y = 0; }
+class Vector {
+    constructor(x = 0, y = 0) {
         this.x = x;
         this.y = y;
     }
-    Vector.prototype.clone = function () {
+    clone() {
         return new Vector(this.x, this.y);
-    };
-    Vector.prototype.rotate = function (theta) {
+    }
+    rotate(theta) {
         return new Vector(this.x * Math.cos(theta) - this.y * Math.sin(theta), this.x * Math.sin(theta) - this.x * Math.cos(theta));
-    };
-    Vector.prototype.distanceTo = function (vec) {
-        var dx = this.x - vec.x;
-        var dy = this.y - vec.y;
+    }
+    distanceTo(vec) {
+        const dx = this.x - vec.x;
+        const dy = this.y - vec.y;
         return Math.sqrt(dx * dx + dy * dy);
-    };
-    Vector.prototype.length = function () {
+    }
+    length() {
         return Math.sqrt(this.x * this.x + this.y * this.y);
-    };
-    Vector.prototype.normalize = function () {
+    }
+    normalize() {
         return this.clone().multiplyScalar(1 / this.length() || 1);
-    };
-    Vector.prototype.add = function (vec) {
-        var r = this.clone();
+    }
+    add(vec) {
+        const r = this.clone();
         r.x += vec.x;
         r.y += vec.y;
         return r;
-    };
-    Vector.prototype.sub = function (vec) {
-        var r = this.clone();
+    }
+    sub(vec) {
+        const r = this.clone();
         r.x -= vec.x;
         r.y -= vec.y;
         return r;
-    };
-    Vector.prototype.multiplyScalar = function (scalar) {
-        var r = this.clone();
+    }
+    multiplyScalar(scalar) {
+        const r = this.clone();
         r.x *= scalar;
         r.y *= scalar;
         return r;
-    };
-    Vector.prototype.multiply = function (vec) {
-        var r = this.clone();
+    }
+    multiply(vec) {
+        const r = this.clone();
         r.x *= vec.x;
         r.y *= vec.y;
         return r;
-    };
-    Vector.prototype.dot = function (vec) {
+    }
+    dot(vec) {
         return this.x * vec.x + this.y * vec.y;
-    };
-    return Vector;
-}());
-var BaseObject = /** @class */ (function () {
-    function BaseObject(_a) {
-        var position = _a.position, velocity = _a.velocity, color = _a.color, mass = _a.mass;
+    }
+}
+class BaseObject {
+    constructor({ position, velocity, color, mass }) {
         this.ctx = ctx;
         this.position = position;
         this.velocity = velocity;
         this.color = color;
         this.mass = mass;
     }
-    return BaseObject;
-}());
-var Circle = /** @class */ (function (_super) {
-    __extends(Circle, _super);
-    function Circle(param) {
-        var _this = _super.call(this, param) || this;
-        _this.radius = param.radius;
-        _this.mass = param.mass || param.radius;
-        return _this;
+}
+class Circle extends BaseObject {
+    constructor(param) {
+        super(param);
+        this.radius = param.radius;
+        this.mass = param.mass || param.radius;
     }
-    Circle.resolveCollision = function (circle1, circle2, distance) {
-        var dR = circle1.radius + circle2.radius;
-        var dP = circle1.position.sub(circle2.position);
-        var dV = circle1.velocity.sub(circle2.velocity);
-        var a = dV.dot(dV);
-        var b = dP.dot(dV) * 2;
-        var c = dP.dot(dP) - dR * dR;
-        var t = (-b - Math.sqrt(b * b - 4 * a * c)) / (2 * a);
+    static resolveCollision(circle1, circle2, distance) {
+        const sumR = circle1.radius + circle2.radius;
+        const dP = circle1.position.sub(circle2.position);
+        const dV = circle1.velocity.sub(circle2.velocity);
+        const a = dV.dot(dV);
+        const b = dP.dot(dV) * 2;
+        const c = dP.dot(dP) - sumR * sumR;
+        const t = (-b - Math.sqrt(b * b - 4 * a * c)) / (2 * a);
         /* Back them up to the touching point ... */
         circle1.position = circle1.position.add(circle1.velocity.multiplyScalar(t));
         circle2.position = circle2.position.add(circle2.velocity.multiplyScalar(t));
         circle1.t = circle2.t = -t; /* partial time left on this iteration */
-    };
-    Circle.bounce = function (circle1, circle2) {
-        var it = circle1;
-        var that = circle2;
-        var deltaP = it.position.sub(that.position);
-        var deltaV = it.velocity.sub(that.velocity);
-        var cf = it.radius + that.radius; /* common factor */
+    }
+    static bounce(circle1, circle2) {
+        const it = circle1;
+        const that = circle2;
+        const deltaP = it.position.sub(that.position);
+        const deltaV = it.velocity.sub(that.velocity);
+        let cf = it.radius + that.radius; /* common factor */
         cf = (2 * deltaV.dot(deltaP)) / (cf * cf * (it.mass + that.mass));
         it.velocity = it.velocity.sub(deltaP.multiplyScalar(cf * that.mass));
         that.velocity = that.velocity.add(deltaP.multiplyScalar(cf * it.mass));
         // move circles back to the touching point
         it.position = it.position.add(it.velocity.multiplyScalar(it.t));
         that.position = that.position.add(that.velocity.multiplyScalar(that.t));
-    };
-    Circle.prototype.detectCollision = function (it) {
-        var distance = this.position.distanceTo(it.position);
-        var result = distance < this.radius + it.radius && distance;
+    }
+    detectCollision(it) {
+        const distance = this.position.distanceTo(it.position);
+        const result = distance < this.radius + it.radius && distance;
         return result;
-    };
-    Circle.prototype.maybeBounceOfWall = function () {
+    }
+    maybeBounceOfWall() {
         if ((this.position.x + this.radius >= ctx.canvas.width &&
             this.velocity.x > 0) ||
             (this.position.x - this.radius <= 0 && this.velocity.x < 0)) {
@@ -131,17 +112,17 @@ var Circle = /** @class */ (function (_super) {
             (this.position.y - this.radius <= 0 && this.velocity.y < 0)) {
             this.velocity = this.velocity.multiply(new Vector(1, -1));
         }
-    };
-    Circle.prototype.draw = function () {
+    }
+    draw() {
         this.ctx.beginPath();
         this.ctx.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2);
         // helpers
         {
-            var targetVec = this.position
-                .clone()
-                .add(this.velocity.clone().multiplyScalar(50));
-            this.ctx.moveTo(this.position.x, this.position.y);
-            this.ctx.lineTo(targetVec.x, targetVec.y);
+            const targetVec = this.position.clone().add(this.velocity.clone());
+            const a = this.velocity.normalize().multiplyScalar(this.radius);
+            const b = targetVec.add(a);
+            this.ctx.moveTo(this.position.x + a.x, this.position.y + a.y);
+            this.ctx.lineTo(b.x, b.y);
             // this.ctx.strokeStyle = 'green'
             // this.ctx.stroke()
         }
@@ -151,43 +132,35 @@ var Circle = /** @class */ (function (_super) {
         this.ctx.fill();
         ctx.strokeStyle = 'black';
         ctx.stroke();
-    };
-    return Circle;
-}(BaseObject));
-var Scene = /** @class */ (function () {
-    function Scene(circles) {
+    }
+}
+class Scene {
+    constructor(circles) {
         this.items = circles;
     }
-    Scene.prototype.startRender = function () {
-        var _this = this;
+    startRender() {
         ctx.fillStyle = backgroundColor;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        this.items.forEach(function (it) {
-            var circles = [];
+        const circles = [];
+        for (let i = 0; i < this.items.length - 1; i++) {
+            for (let j = 1; j < this.items.length; j++) {
+                const it = this.items[i];
+                const that = this.items[j];
+                if (it.detectCollision(that)) {
+                    Circle.resolveCollision(it, that);
+                    Circle.bounce(it, that);
+                }
+            }
+        }
+        this.items.forEach((it) => {
             it.position = it.position.add(it.velocity);
             it.maybeBounceOfWall();
-            _this.items.forEach(function (that) {
-                if (it === that) {
-                    return;
-                }
-                if (it.detectCollision(that)) {
-                    console.log('collision');
-                    circles.push([it, that]);
-                }
-            });
-            circles.forEach(function (arr) {
-                var it = arr[0];
-                var that = arr[1];
-                Circle.resolveCollision(it, that);
-                Circle.bounce(it, that);
-            });
             it.draw();
         });
-        window.requestAnimationFrame(function () { return _this.startRender(); });
-    };
-    return Scene;
-}());
-var scene = new Scene([
+        window.requestAnimationFrame(() => this.startRender());
+    }
+}
+const scene = new Scene([
     // new Circle({
     //   color: 'green',
     //   velocity: new Vector(6,0),
@@ -205,46 +178,46 @@ var scene = new Scene([
     new Circle({
         color: 'gray',
         velocity: new Vector(-2.5, 0),
-        position: new Vector(250, 150),
+        position: new Vector(150, 150),
         // mass: 1,
-        radius: 35
+        radius: 35,
     }),
     new Circle({
         color: 'white',
         velocity: new Vector(2, 0),
-        position: new Vector(100, 150),
+        position: new Vector(200, 150),
         // mass: 2,
-        radius: 55
+        radius: 55,
     }),
     new Circle({
         color: 'red',
         velocity: new Vector(-6, 0),
-        position: new Vector(450, 250),
-        radius: 35
+        position: new Vector(350, 150),
+        radius: 35,
     }),
     new Circle({
         color: 'green',
-        velocity: new Vector(rand(-5, 5), rand(-5, 5)),
-        position: new Vector(30, 100),
-        radius: rand(5, 20)
+        velocity: new Vector(~~rand(-5, 15), ~~rand(-5, 15)),
+        position: new Vector(80, 300),
+        radius: ~~rand(10, 25),
     }),
     new Circle({
         color: 'green',
-        velocity: new Vector(rand(-5, 5), rand(-5, 5)),
+        velocity: new Vector(~~rand(-5, 15), ~~rand(-5, 15)),
         position: new Vector(150, 100),
-        radius: rand(5, 20)
+        radius: ~~rand(10, 25),
     }),
     new Circle({
         color: 'green',
-        velocity: new Vector(rand(-5, 5), rand(-5, 5)),
-        position: new Vector(150, 100),
-        radius: rand(5, 20)
+        velocity: new Vector(~~rand(-5, 15), ~~rand(-5, 15)),
+        position: new Vector(200, 200),
+        radius: ~~rand(10, 25),
     }),
     new Circle({
         color: 'green',
-        velocity: new Vector(rand(-5, 5), rand(-5, 5)),
-        position: new Vector(200, 100),
-        radius: rand(5, 20)
+        velocity: new Vector(~~rand(-5, 15), ~~rand(-15, 15)),
+        position: new Vector(300, 200),
+        radius: ~~rand(10, 25),
     }),
 ]);
 scene.startRender();
@@ -253,3 +226,4 @@ function rand(min, max) {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+//# sourceMappingURL=main.js.map
