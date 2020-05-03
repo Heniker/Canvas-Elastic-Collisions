@@ -141,9 +141,8 @@ class Scene {
     startRender() {
         ctx.fillStyle = backgroundColor;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        const circles = [];
         for (let i = 0; i < this.items.length - 1; i++) {
-            for (let j = 1; j < this.items.length; j++) {
+            for (let j = i; j < this.items.length; j++) {
                 const it = this.items[i];
                 const that = this.items[j];
                 if (it.detectCollision(that)) {
