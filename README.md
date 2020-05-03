@@ -60,6 +60,6 @@ In case you're implementing elastic collisions - there are 2 main things to keep
 
 
 
-Also, if circles are moving really fast - they can pass through each other on a single frame without colliding.
+Also, if circles are moving really fast - they can pass through each other on a single frame without triggering collision.
 
-AFAIK there isn't easy fix to this problem. You have to check circle position several times on a single render frame.
+AFAIK there arent easy fixes to this problem. You have to apply velocity in parts and check for collision several times on a single render frame.
