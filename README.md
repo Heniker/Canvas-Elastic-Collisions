@@ -18,9 +18,9 @@ In case you're implementing elastic collisions - there are 2 main things to keep
 
 1. After collision velocity: 
 
-  [wiki](https://en.wikipedia.org/wiki/Elastic_collision) <br>
+    [wiki](https://en.wikipedia.org/wiki/Elastic_collision) <br>
 
-2. Resolving collision. <br>
+2. Resolving collision: <br>
 
   When 'balls' collide, even after you give them new velocities, they can still intersect on the next frame you check. <br>
 
