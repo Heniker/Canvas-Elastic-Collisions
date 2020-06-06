@@ -2,7 +2,7 @@
 // #region globals
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
-const backgroundColor = 'rgb(117, 104, 175)';
+const backgroundColor = 'rgba(117, 104, 175)';
 // almost enteriely copied from Three.js implementation
 // except every function instead returns a new Vector
 class Vector {
@@ -127,7 +127,7 @@ class Circle extends BaseObject {
             // this.ctx.stroke()
         }
         //
-        this.ctx.closePath;
+        this.ctx.closePath();
         this.ctx.fillStyle = this.color;
         this.ctx.fill();
         ctx.strokeStyle = 'black';

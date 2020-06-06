@@ -2,63 +2,54 @@
 
 https://heniker.github.io/Canvas-Elastic-Collisions/
 
-
-
 ### About
 
 So... I started this 'project' to learn more about canvas in JavaScript. Little do I know that even simple physics simulation can be tricky.
 
-
-
-*This took more time than I'd like to admit.*
-
-
+_This took more time than I'd like to admit._
 
 In case you're implementing elastic collisions - there are 2 main things to keep in mind:
 
-1. After collision velocity: 
+1. After collision velocity:
 
     [wiki](https://en.wikipedia.org/wiki/Elastic_collision) <br>
 
 2. Resolving collision: <br>
 
-  When 'balls' collide, even after you give them new velocities, they can still intersect on the next frame you check. <br>
+    When 'balls' collide, even after you give them new velocities, they can still intersect on the next frame you check. <br>
 
-  The 2 possible solutions to this problem are:
+    The 2 possible solutions to this problem are:
 
-   1. Move circles back to the touching point. <br>
+    - Move circles back to the touching point: <br>
 
-      There are many implementations of this approach. Generally speaking - you have to detect in what 'time' collision happened.
-      
-      Personally, [Khan academy](https://www.khanacademy.org/) helped me a lot on this solution.
-      
-      Also see this [Great article on solving collisions using vectors](http://www.vobarian.com/collisions/).
+        There are many implementations of this approach. Generally speaking - you have to detect in what 'time' collision happened.
 
-   2. Ignore new collision after collision already happened and velocities changed. 
+        Personally, [Khan academy](https://www.khanacademy.org/) helped me a lot on this solution.
 
-      Something like this might work for most cases:
+        Also, check this [Great article on solving collisions using vectors](http://www.vobarian.com/collisions/).
 
-      ```
+    - Ignore new collision after collision already happened and velocities changed:
 
-      vDif = it.velocity - that.velocity // vector
+        Something like this might work for most cases:
 
-      pDif = it.position - that.position // vector
+        ```
 
-      common = vDif * pDif // vector
+        vDif = it.velocity - that.velocity // vector
 
-      if (pDif.length <= it.radius + that.radius && common.x + common.y < 0) {
+        pDif = it.position - that.position // vector
 
-        // handle collision
+        common = vDif * pDif // vector
 
-      } else {
+        if (pDif.length <= it.radius + that.radius && common.x + common.y < 0) {
 
-        // balls are moving away from each other - do nothing
+          // handle collision
 
-      }
+        } else {
 
-      ```
+          // balls are moving away from each other - do nothing
 
-
+        }
+        ```
 
 Also, if circles are moving really fast - they can pass through each other on a single frame without triggering collision.
 

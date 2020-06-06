@@ -1,7 +1,7 @@
 // #region globals
 const canvas = document.querySelector('canvas')
 const ctx = canvas.getContext('2d')
-const backgroundColor = 'rgb(117, 104, 175)'
+const backgroundColor = 'rgba(117, 104, 175)'
 // #endregion
 
 interface BaseObjectContructorI {
@@ -140,6 +140,8 @@ class Circle extends BaseObject {
 
   radius: number
 
+  mass: number;
+
   constructor(param: BaseObjectContructorI & { radius: number }) {
     super(param)
     this.radius = param.radius
@@ -187,7 +189,7 @@ class Circle extends BaseObject {
     }
     //
 
-    this.ctx.closePath
+    this.ctx.closePath()
     this.ctx.fillStyle = this.color
     this.ctx.fill()
     ctx.strokeStyle = 'black'
