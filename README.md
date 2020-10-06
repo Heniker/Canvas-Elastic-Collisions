@@ -4,7 +4,7 @@ https://heniker.github.io/Canvas-Elastic-Collisions/
 
 ### About
 
-So... I started this 'project' to learn more about canvas in JavaScript. Little do I know that even simple physics simulation can be tricky.
+So... I started this 'project' to learn more about canvas in JavaScript. Little did I know that even simple physics simulation can be tricky.
 
 _This took more time than I'd like to admit._
 
